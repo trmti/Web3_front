@@ -1,7 +1,14 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
-import './chatpage.css';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Container,
+} from '@mui/material';
 
 type Message = {
   type: 'user' | 'bot';
@@ -53,37 +60,79 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="container">
-      <div id="bms_chat_header">
-        <div id="bms_chat_user_status">
-          <div id="bms_chat_user_name">Decentra Love</div>
-        </div>
-      </div>
-      <div id="bms_messages">
+    <Container maxWidth="sm" sx={{ mt: 4, p: 0, border: 1, borderColor: 'grey.300' }}>
+      {/* ヘッダー */}
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
+          borderColor: 'grey.300',
+          backgroundColor: 'grey.100',
+        }}
+      >
+        <Typography variant="h6">Decentra Love</Typography>
+      </Box>
+
+      {/* メッセージリスト */}
+      <Box
+        sx={{
+          p: 2,
+          height: '400px',
+          overflowY: 'auto',
+          backgroundColor: 'grey.50',
+        }}
+      >
         {messages.map((msg, index) => (
-          <div
+          <Box
             key={index}
-            className={`bms_message ${msg.type === 'user' ? 'bms_right' : 'bms_left'}`}
+            sx={{
+              display: 'flex',
+              justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
+              mb: 2,
+            }}
           >
-            <div className="bms_message_box">
-              <div className="bms_message_content">
-                <div className="bms_message_text">{msg.content}</div>
-              </div>
-            </div>
-          </div>
+            <Paper
+              sx={{
+                p: 1,
+                maxWidth: '70%',
+                backgroundColor: msg.type === 'user' ? 'primary.light' : 'grey.200',
+              }}
+            >
+              <Typography variant="body1">{msg.content}</Typography>
+            </Paper>
+          </Box>
         ))}
-      </div>
-      <div id="bms_send">
-        <textarea
-          id="bms_send_message"
+      </Box>
+
+      {/* メッセージ入力 */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          p: 2,
+          borderTop: 1,
+          borderColor: 'grey.300',
+          backgroundColor: 'grey.100',
+        }}
+      >
+        <TextField
+          fullWidth
+          variant="outlined"
+          size="small"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
-        ></textarea>
-        <div id="bms_send_btn" onClick={handleSendMessage}>
+          placeholder="メッセージを入力してください..."
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ ml: 2 }}
+          onClick={handleSendMessage}
+        >
           送信
-        </div>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Container>
   );
 };
 
