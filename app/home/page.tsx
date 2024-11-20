@@ -19,6 +19,7 @@ export default function Home() {
         flexWrap: "wrap",
         justifyContent: "space-around",
         gap: 2,
+        marginTop: 5,
       }}
     >
       {cards.map((_, index) => (
@@ -28,11 +29,12 @@ export default function Home() {
             minWidth: 200,
             flex: "1 1 calc(25.0% - 16px)",
             boxSizing: "border-box",
+            color: "#dadfe8",
           }}
         >
           <CardContent>
             <Typography
-              sx={{ color: "text.primary", mb: 2.0 }}
+              sx={{ color: "#373e5a", mb: 2.0 }}
               variant="h5"
               component="div"
             >
@@ -50,7 +52,8 @@ export default function Home() {
           </CardContent>
           <CardActions>
             <Button size="small">
-              <SendIcon></SendIcon> <span style={{ marginLeft: 5 }}>CHAT</span>
+              <SendIcon sx={{ color: "#373e5a" }}></SendIcon>{" "}
+              <span style={{ color: "#373e5a", marginLeft: 5 }}>CHAT</span>
             </Button>
           </CardActions>
         </Card>
