@@ -1,14 +1,14 @@
 "use client"; // これを追加して、Client Componentとして指定します
 
 import { useState } from "react";
-import { useRouter } from "next/router";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import { PrimaryButton } from "./_component/PrimaryButton";
 import { TextButton } from "./_component/TextButton";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
   const [username, setUsername] = useState<string>(""); // ユーザー名の状態管理
-  // const router = useRouter(); // ページ遷移用
+  const router = useRouter();
 
   // // Loginボタンのクリックハンドラ
   // const handleLoginClick = () => {
@@ -21,53 +21,80 @@ const Home = () => {
   // };
 
   return (
-    <Container
-      sx={{
-        position: "relative",
-        padding: "100px 0",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundSize: "cover",
-        backgroundPosition: "right",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <Box sx={{ textAlign: "center" }}>
-        <TextField
-          label="Username"
-          variant="outlined"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          sx={{
-            mb: 3,
-            width: "300px",
-            "& .MuiInputBase-root": {
-              color: "##162040", // 入力部分の文字色
-            },
-            "& .MuiInputLabel-root": {
-              color: "#162040", // ラベルの文字色
-            },
-            "& .MuiInputBase-root.Mui-focused": {
-              borderColor: "#162040", // 入力フィールドがフォーカスされている時の枠線色
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: "#162040", // フォーカス時のラベル文字色
-            },
-          }}
-        />
-        <br />
-
-        <PrimaryButton disabled={!username.trim()}>Login</PrimaryButton>
-
-        <br />
-
-        <TextButton>Sign up</TextButton>
+    <Box>
+      <Box
+        sx={{
+          backgroundColor: "#373e5a",
+          textAlign: "center",
+          paddingY: "16px",
+        }}
+      >
+        <Typography sx={{ fontSize: 40, color: "#ff6680" }}>
+          MoAによる分散型プラットフォーム
+        </Typography>
+        <Typography sx={{ fontSize: 20, color: "#dadfe8" }}>
+          コンピュータ性能に依存しない高精度LLMの実現
+        </Typography>
       </Box>
-    </Container>
+      <Container
+        sx={{
+          position: "relative",
+          padding: "100px 0",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundSize: "cover",
+          backgroundPosition: "right",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <Box sx={{ textAlign: "center" }}>
+          <TextField
+            label="Username"
+            variant="outlined"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            sx={{
+              mb: 3,
+              width: "300px",
+              "& .MuiInputBase-root": {
+                color: "#162040", // 入力部分の文字色
+              },
+              "& .MuiInputLabel-root": {
+                color: "#162040", // ラベルの文字色
+              },
+              "& .MuiInputBase-root.Mui-focused": {
+                borderColor: "#373e5a", // 入力フィールドがフォーカスされている時の枠線色
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#162040", // フォーカス時のラベル文字色
+              },
+            }}
+          />
+          <br />
+
+          <PrimaryButton
+            disabled={!username.trim()}
+            onClick={() => router.push("/model_select")}
+          >
+            Login
+          </PrimaryButton>
+
+          <br />
+
+          <TextButton
+            sx={{
+              color: "#0a1228",
+              "&:hover": { backgroundColor: "#dadfe8", color: "#ff6680" },
+            }}
+          >
+            Sign up
+          </TextButton>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 
