@@ -35,22 +35,8 @@ const Home = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-<Typography
-  variant="h3"
-  component="h1"
-  sx={{
-    mb: 4,
-    color: "#000", // 文字色を黒に変更
-    fontFamily: "'Scribble', cursive", // フォントファミリー
-    fontSize: "5rem", // フォントサイズ
-    
-  }}
->
-  Decentra Love
-</Typography>
-
       <Box sx={{ textAlign: "center" }}>
-      <TextField
+        <TextField
           label="Username"
           variant="outlined"
           value={username}
@@ -75,13 +61,11 @@ const Home = () => {
         />
         <br />
 
-        <PrimaryButton
-        disabled={!username.trim()}
-        >Login</PrimaryButton>
+        <PrimaryButton disabled={!username.trim()}>Login</PrimaryButton>
 
         <br />
-        
-       <TextButton>Sign up</TextButton>
+
+        <TextButton>Sign up</TextButton>
       </Box>
     </Container>
   );
