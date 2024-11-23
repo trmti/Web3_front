@@ -1,14 +1,14 @@
-'use client';
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Button, Typography, Paper } from "@mui/material";
-import { TextArea } from "./component/TextArea";
+import { TextArea } from "@/app/_component/TextArea";
 
 type Message = {
-  type: 'user' | 'bot';
+  type: "user" | "bot";
   content: string;
 };
 
-const ChatApp = () => {
+const ChatApp = ({ params }: { params: { slug: string } }) => {
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const endOfMessages = useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ const ChatApp = () => {
       //       Wait_Task_Num: 1,
       //     }),
       //   });
-      const response = { 'answer': 'うるせえだまれ！' }
+      const response = { answer: "うるせえだまれ！" };
       const data = await response;
       setChatMessages((prev) => [
         ...prev,
@@ -52,29 +52,28 @@ const ChatApp = () => {
     }
 
     setMessage(""); // メッセージボックスをクリア
-  }
-  
+  };
+
   const keySend = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.shiftKey && event.key === 'Enter') {
-      return
+    if (event.shiftKey && event.key === "Enter") {
+      return;
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      handleSend();
     }
-    else if (event.key === 'Enter') {
-      event.preventDefault()
-      handleSend()
-    }
-  }
+  };
 
   useEffect(() => {
     if (endOfMessages.current) {
-        endOfMessages.current.scrollTop = endOfMessages.current.scrollHeight;
+      endOfMessages.current.scrollTop = endOfMessages.current.scrollHeight;
     }
-  }, [chatMessages])
+  }, [chatMessages]);
 
   return (
-    <Box 
-      sx={{   
+    <Box
+      sx={{
         maxWidth: "600px",
-        height: '100%',
+        height: "100%",
         margin: "0 auto",
         padding: 2,
         backgroundColor: "#dadfe8",
@@ -92,14 +91,16 @@ const ChatApp = () => {
           justifyContent: "space-between",
         }}
       >
-        <Typography variant="h6" color='white' >Decentra Love</Typography>
+        <Typography variant="h6" color="white">
+          {params.slug}
+        </Typography>
       </Box>
 
       {/* メッセージ表示エリア */}
       <Box
         sx={{
           maxHeight: "400px",
-          height: '100%',
+          height: "100%",
           overflowY: "auto",
           backgroundColor: "#fff",
           border: "1px solid #ccc",
@@ -116,8 +117,8 @@ const ChatApp = () => {
               display: "flex",
               justifyContent: msg.type === "user" ? "flex-end" : "flex-start",
               marginBottom: 1,
-              whiteSpace: 'pre-wrap',
-              wordWrap: 'break-word'
+              whiteSpace: "pre-wrap",
+              wordWrap: "break-word",
             }}
           >
             <Paper
@@ -125,8 +126,7 @@ const ChatApp = () => {
               sx={{
                 padding: "8px 16px",
                 borderRadius: "16px",
-                backgroundColor:
-                  msg.type === "user" ? "#373e58" : "#dadfe8",
+                backgroundColor: msg.type === "user" ? "#373e58" : "#dadfe8",
                 color: msg.type === "user" ? "white" : "black",
                 maxWidth: "70%",
               }}
@@ -158,8 +158,8 @@ const ChatApp = () => {
           color="primary"
           onClick={handleSend}
           sx={{
-            height: "100%", 
-            backgroundColor: '#162040'
+            height: "100%",
+            backgroundColor: "#162040",
           }}
         >
           送信
