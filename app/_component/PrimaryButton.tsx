@@ -1,6 +1,6 @@
 import { Button, ButtonProps } from "@mui/material";
 
-export const PrimaryButton = ({ children, ...rest }: ButtonProps) => {
+export const PrimaryButton = ({ children, sx, ...rest }: ButtonProps) => {
   return (
     <Button
       variant="outlined"
@@ -20,6 +20,7 @@ export const PrimaryButton = ({ children, ...rest }: ButtonProps) => {
         fontWeight: "bold",
         "&:hover": { borderColor: "#373e5a" },
         ":disabled": { backgroundColor: "#ccc", cursor: "not-allowed" },
+        ...sx,
       }}
       {...rest}
     >
