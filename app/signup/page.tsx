@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
-import { PrimaryButton } from "./_component/PrimaryButton";
-import { TextButton } from "./_component/TextButton";
+import { PrimaryButton } from "../_component/PrimaryButton";
+import { TextButton } from "../_component/TextButton";
 import { useRouter } from "next/navigation";
 
 const Home = () => {
@@ -23,20 +23,6 @@ const Home = () => {
 
   return (
     <Box>
-      <Box
-        sx={{
-          backgroundColor: "#373e5a",
-          textAlign: "center",
-          paddingY: "16px",
-        }}
-      >
-        <Typography sx={{ fontSize: 40, color: "#ff6680" }}>
-          MoAによる分散型AIプラットフォーム
-        </Typography>
-        <Typography sx={{ fontSize: 20, color: "#dadfe8" }}>
-          コンピュータ性能に依存しない高精度LLMの実現
-        </Typography>
-      </Box>
       <Container
         sx={{
           position: "relative",
@@ -104,22 +90,12 @@ const Home = () => {
 
           <PrimaryButton
             disabled={!(username.trim() && password.trim())}
-            onClick={() => router.push("/model_select")}
+            onClick={() => router.push("../")}
           >
-            Login
+            Registration
           </PrimaryButton>
 
           <br />
-
-          <TextButton
-            onClick={() => router.push("/signup")}
-            sx={{
-              color: "#0a1228",
-              "&:hover": { backgroundColor: "#dadfe8", color: "#ff6680" },
-            }}
-          >
-            Sign up
-          </TextButton>
         </Box>
       </Container>
     </Box>
