@@ -9,7 +9,7 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import Button, { ButtonProps } from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import DeveloperBoardIcon from "@mui/icons-material/DeveloperBoard";
@@ -62,14 +62,20 @@ export function Header() {
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            <Button
+            <HeaderButton
               onClick={() => {
                 router.push("/model_select");
               }}
-              sx={{ my: 2, color: "#dadfe8", display: "block" }}
             >
               New Model
-            </Button>
+            </HeaderButton>
+            <HeaderButton
+              onClick={() => {
+                router.push("/gpu");
+              }}
+            >
+              GPU
+            </HeaderButton>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -108,3 +114,11 @@ export function Header() {
     </AppBar>
   );
 }
+
+const HeaderButton = ({ children, ...rest }: ButtonProps) => {
+  return (
+    <Button sx={{ my: 2, color: "#dadfe8", display: "block" }} {...rest}>
+      {children}
+    </Button>
+  );
+};
