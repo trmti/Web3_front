@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { useRouter } from "next/navigation";
+import EditIcon from "@mui/icons-material/Edit";
 
 const mockChatRooms = [
   {
@@ -91,6 +92,10 @@ export default function Home() {
             >
               <SendIcon sx={{ color: "#373e5a" }}></SendIcon>{" "}
               <span style={{ color: "#373e5a", marginLeft: 5 }}>CHAT</span>
+            </Button>
+            <Button size="small" onClick={() => router.push("/learn")}>
+              <EditIcon sx={{ color: "#373e5a" }}></EditIcon>{" "}
+              <span style={{ color: "#373e5a", marginRight: 1 }}>learn</span>
             </Button>
           </CardActions>
         </Card>
