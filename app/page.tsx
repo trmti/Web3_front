@@ -26,7 +26,7 @@ const Home = () => {
     const res_json = await res.json();
     if (res_json.user_id) {
       localStorage.setItem("user_id", res_json.user_id);
-      router.push("/model_select");
+      router.push("/home");
     }
   };
 
