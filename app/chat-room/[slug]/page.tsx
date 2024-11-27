@@ -147,6 +147,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
               marginBottom: 2,
             }}
           >
+            以下の3つの推論をまとめました
             {chatDetails.map((dtl, index) => (
               <Box
                 key={index}
