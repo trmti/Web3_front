@@ -173,9 +173,7 @@ const Home = () => {
       onDrop,
       onDropRejected,
       accept: {
-        "image/jpeg": [],
-        "image/png": [],
-        "application/pdf": [],
+        "application/json": [],
       },
       maxSize: 50 * 1024 * 1024,
     });
