@@ -25,6 +25,23 @@ const Home = () => {
     }
   }, [password, confirmpassword]);
 
+  const onClickSignup = async () => {
+    const Data = {
+      username: username,
+      password: password,
+    };
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/signup`, {
+      headers: {
+        "content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify(Data),
+      method: "POST",
+    });
+    const res_json = await res.json();
+    if (res_json.user_id) {
+      router.push("/");
+    }
+  };
   return (
     <Stack
       direction="row"
@@ -148,7 +165,7 @@ const Home = () => {
                   password.trim() == confirmpassword.trim()
                 )
               }
-              onClick={() => router.push("../")}
+              onClick={onClickSignup}
             >
               登録
             </PrimaryButton>
