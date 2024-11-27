@@ -15,8 +15,8 @@ import {
 import { styled } from "@mui/system";
 import { PrimaryButton } from "../_component/PrimaryButton";
 import { useRouter } from "next/navigation";
-import { useDropzone, FileRejection } from "react-dropzone";
-import CloseIcon from '@mui/icons-material/Close'; // アイコンを追加
+// import { useDropzone, FileRejection } from "react-dropzone";
+import CloseIcon from "@mui/icons-material/Close"; // アイコンを追加
 import { PrimaryTypography } from "../_component/PrimaryTypography";
 
 // スタイル定義
@@ -43,13 +43,13 @@ const FileList = styled("div")({
   width: "50%", // 幅を調整して右側に表示
   textAlign: "center",
   marginTop: "20px",
-  marginLeft:"30px",
+  marginLeft: "30px",
 });
 
 // ModelSelectorコンポーネントのスタイル
 const ModelSelect = styled(Select)({
   "text-overflow": "ellipsis",
-  "overflow": "hidden",
+  overflow: "hidden",
   "white-space": "nowrap",
   maxWidth: "175px", // プルダウンメニューの横幅を設定（必要に応じて調整）
 });
@@ -70,9 +70,14 @@ const ModelSelector = ({
     <Typography variant="h6" sx={{ color: "#373e5a", textAlign: "center" }}>
       {label}
     </Typography>
-    <ModelSelect fullWidth value={value} onChange={(event, child) => 
+    <ModelSelect
+      fullWidth
+      value={value}
+      onChange={(event, child) =>
         onChange(event as SelectChangeEvent<string>, child)
-      } displayEmpty>
+      }
+      displayEmpty
+    >
       <MenuItem value="">
         <Typography sx={{ color: "#162040" }}>選択してください</Typography>
       </MenuItem>
@@ -125,7 +130,9 @@ const Home = () => {
         ...prevFiles,
         { file, isUploaded: false },
       ]);
-      await new Promise((resolve) => setTimeout(resolve, Math.random() * 9000 + 1000));
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.random() * 9000 + 1000)
+      );
       setCurrentShowFiles((prevFiles) =>
         prevFiles.map((f) =>
           f.file.name === file.name ? { ...f, isUploaded: true } : f
@@ -142,7 +149,8 @@ const Home = () => {
         (file) =>
           !currentShowFiles.find(
             (showFile) =>
-              file.name === showFile.file.name && file.size === showFile.file.size
+              file.name === showFile.file.name &&
+              file.size === showFile.file.size
           )
       );
       if (filteringFiles.length + currentShowFiles.length > 10) {
@@ -217,45 +225,50 @@ const Home = () => {
             {isDragAccept
               ? "ファイルをアップロードします。"
               : isDragReject
-              ? "エラー"
-              : "ファイルを登録してください。"}
-          <button disabled={isDragReject}>ファイルを選択。または、ドラッグ＆ドロップ</button>
+                ? "エラー"
+                : "ファイルを登録してください。"}
+            <button disabled={isDragReject}>
+              ファイルを選択。または、ドラッグ＆ドロップ
+            </button>
           </PrimaryTypography>
         </DropArea>
         <FileList>
-  <PrimaryTypography>
-    {currentShowFiles.map((item, index) => (
-      <Box key={index}>
-        {item.isUploaded ? (
-          <Box sx={{ display: "flex",
-           alignItems: "center",
-            justifyContent: "space-between" }}>
-
-            <Box sx={{ marginRight: "10px" }}>{item.file.name}</Box> {/* ファイル名の右側にスペースを追加 */}
-             <PrimaryButton sx={{
-                color: "white", // テキストを白に
-                backgroundColor: "red", // 背景を赤に
-                borderRadius: "20px", // 丸みを帯びたボタン
-                padding: "5px 10px", // ボタンの内側の余白
-                border: "none", // 枠線なし
-                cursor: "pointer", // カーソルをポインタに
-                fontSize: "12px", // フォントサイズ調整
-                width : "6",
-              }}
-              onClick={() => handleDeleteFile(item.file.name)}
-            >
-              削除
-            </PrimaryButton>
-          </Box>
-        ) : (
-          <div>{item.file.name} をアップロードしています…</div>
-        )}
-      </Box>
-    ))}
-  </PrimaryTypography>
-</FileList>
-
-
+          <PrimaryTypography>
+            {currentShowFiles.map((item, index) => (
+              <Box key={index}>
+                {item.isUploaded ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Box sx={{ marginRight: "10px" }}>{item.file.name}</Box>{" "}
+                    {/* ファイル名の右側にスペースを追加 */}
+                    <PrimaryButton
+                      sx={{
+                        color: "white", // テキストを白に
+                        backgroundColor: "red", // 背景を赤に
+                        borderRadius: "20px", // 丸みを帯びたボタン
+                        padding: "5px 10px", // ボタンの内側の余白
+                        border: "none", // 枠線なし
+                        cursor: "pointer", // カーソルをポインタに
+                        fontSize: "12px", // フォントサイズ調整
+                        width: "6",
+                      }}
+                      onClick={() => handleDeleteFile(item.file.name)}
+                    >
+                      削除
+                    </PrimaryButton>
+                  </Box>
+                ) : (
+                  <div>{item.file.name} をアップロードしています…</div>
+                )}
+              </Box>
+            ))}
+          </PrimaryTypography>
+        </FileList>
       </DropAreaContainer>
 
       <Box textAlign="center" my={"50px"}>
