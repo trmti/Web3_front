@@ -11,6 +11,25 @@ const Home = () => {
   const [password, setPassword] = useState<string>("");
   const router = useRouter();
 
+  const onClickLogin = async () => {
+    const Data = {
+      username: username,
+      password: password,
+    };
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/login`, {
+      headers: {
+        "content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify(Data),
+      method: "POST",
+    });
+    const res_json = await res.json();
+    if (res_json.user_id) {
+      localStorage.setItem("user_id", res_json.user_id);
+      router.push("/model_select");
+    }
+  };
+
   // // Loginボタンのクリックハンドラ
   // const handleLoginClick = () => {
   //   router.push("/new-model"); // /new-modelページに遷移
@@ -104,7 +123,7 @@ const Home = () => {
 
           <PrimaryButton
             disabled={!(username.trim() && password.trim())}
-            onClick={() => router.push("/model_select")}
+            onClick={onClickLogin}
           >
             Login
           </PrimaryButton>
