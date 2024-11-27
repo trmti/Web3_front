@@ -14,6 +14,7 @@ const Home = () => {
   const [password, setPassword] = useState<string>("");
   const [confirmpassword, confirmPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
+  const [apiError, setApiError] = useState<string>("");
   const router = useRouter();
 
   // リアルタイムでパスワードの一致を確認
@@ -26,22 +27,38 @@ const Home = () => {
   }, [password, confirmpassword]);
 
   const onClickSignup = async () => {
+    setApiError(""); // APIエラーメッセージをリセット
+
     const Data = {
       username: username,
       password: password,
     };
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/signup`, {
-      headers: {
-        "content-type": "application/json; charset=UTF-8",
-      },
-      body: JSON.stringify(Data),
-      method: "POST",
-    });
-    const res_json = await res.json();
-    if (res_json.user_id) {
-      router.push("/");
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/signup`, {
+        headers: {
+          "content-type": "application/json; charset=UTF-8",
+        },
+        body: JSON.stringify(Data),
+        method: "POST",
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "登録に失敗しました。");
+      }
+      const res_json = await res.json();
+      if (res_json.user_id) {
+        router.push("/");
+      }
+    } catch (error) {
+      // エラーメッセージを状態に設定
+      if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError("予期しないエラーが発生しました。");
+      }
     }
   };
+
   return (
     <Stack
       direction="row"
@@ -154,7 +171,11 @@ const Home = () => {
               }}
             />
             <br />
-
+            {apiError && (
+              <Typography sx={{ color: "red", mb: 2 }}>
+                !!!!既に使われているユーザーidです!!!!
+              </Typography>
+            )}
             <PrimaryButton
               sx={{ width: "100%" }}
               disabled={
