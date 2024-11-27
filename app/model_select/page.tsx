@@ -17,6 +17,7 @@ import { PrimaryButton } from "../_component/PrimaryButton";
 import { useRouter } from "next/navigation";
 import { useDropzone, FileRejection } from "react-dropzone";
 import CloseIcon from '@mui/icons-material/Close'; // アイコンを追加
+import { PrimaryTypography } from "../_component/PrimaryTypography";
 
 // スタイル定義
 const DropAreaContainer = styled(Box)({
@@ -214,25 +215,26 @@ const Home = () => {
       <DropAreaContainer>
         <DropArea {...getRootProps()}>
           <input {...getInputProps()} />
-          <p>
+          <PrimaryTypography>
             {isDragAccept
               ? "ファイルをアップロードします。"
               : isDragReject
               ? "エラー"
               : "ファイルを登録してください。"}
-          </p>
           <button disabled={isDragReject}>ファイルを選択。または、ドラッグ＆ドロップ</button>
+          </PrimaryTypography>
         </DropArea>
         <FileList>
-  <ul>
+  <PrimaryTypography>
     {currentShowFiles.map((item, index) => (
-      <li key={index}>
+      <Box key={index}>
         {item.isUploaded ? (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ marginRight: "10px" }}>{item.file.name}</div> {/* ファイル名の右側にスペースを追加 */}
-            <button
-              onClick={() => handleDeleteFile(item.file.name)}
-              style={{
+          <Box sx={{ display: "flex",
+           alignItems: "center",
+            justifyContent: "space-between" }}>
+
+            <Box sx={{ marginRight: "10px" }}>{item.file.name}</Box> {/* ファイル名の右側にスペースを追加 */}
+             <PrimaryButton sx={{
                 color: "white", // テキストを白に
                 backgroundColor: "red", // 背景を赤に
                 borderRadius: "20px", // 丸みを帯びたボタン
@@ -240,17 +242,19 @@ const Home = () => {
                 border: "none", // 枠線なし
                 cursor: "pointer", // カーソルをポインタに
                 fontSize: "12px", // フォントサイズ調整
+                width : "6",
               }}
+              onClick={() => handleDeleteFile(item.file.name)}
             >
               削除
-            </button>
-          </div>
+            </PrimaryButton>
+          </Box>
         ) : (
           <div>{item.file.name} をアップロードしています…</div>
         )}
-      </li>
+      </Box>
     ))}
-  </ul>
+  </PrimaryTypography>
 </FileList>
 
 
