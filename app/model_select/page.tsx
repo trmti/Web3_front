@@ -96,6 +96,28 @@ const Home = () => {
   const [model3, setModel3] = useState("");
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const router = useRouter();
+  const Uid = localStorage.getItem("user_id");
+
+  const onClickCreate = async () => {
+    const Data = {
+      user_id: Uid,
+      model_name_1: model1,
+      model_name_2: model2,
+      model_name_3: model3,
+      train_completed: false,
+    };
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/model`, {
+      headers: {
+        "content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify(Data),
+      method: "POST",
+    });
+    const res_json = await res.json();
+    if (res_json.id) {
+      router.push("/home");
+    }
+  };
 
   const models = [
     { value: "Llama-2-7b-Japanese", label: "Llama-2-7b-Japanese" },
@@ -145,7 +167,8 @@ const Home = () => {
           variant="contained"
           color="primary"
           disabled={!isButtonEnabled}
-          onClick={() => router.push("/home")}
+          onClick={onClickCreate}
+          // onClick={() => router.push("/home")}
         >
           決定
         </PrimaryButton>
