@@ -173,7 +173,7 @@ const Home = () => {
             <br />
             {apiError && (
               <Typography sx={{ color: "red", mb: 2 }}>
-                !!!!既に使われているユーザーidです!!!!
+                !!!!既に使われている名前です!!!!
               </Typography>
             )}
             <PrimaryButton
