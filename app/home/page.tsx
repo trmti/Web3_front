@@ -61,7 +61,6 @@ export default function Home() {
         `${process.env.NEXT_PUBLIC_API_ROOT}/model?user_id=${localStorage.getItem("user_id")}`
       ).then((res) => res.json()),
   });
-  console.log(data);
 
   return (
     <Container
