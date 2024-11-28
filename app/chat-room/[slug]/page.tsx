@@ -2,16 +2,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Button, Typography, Paper } from "@mui/material";
 import { TextArea } from "@/app/_component/TextArea";
+import { matchesGlob } from "path";
+import { Description } from "@mui/icons-material";
 
 type Message = {
   type: "user" | "bot" | "detail1" | "detail2" | "detail3";
   content: string;
 };
 
+type Response = {
+  answer: string;
+  detail1: string;
+  detail2: string;
+  detail3: string;
+};
+
 const ChatApp = ({ params }: { params: { slug: string } }) => {
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [chatDetails, setChatDetails] = useState<Message[]>([]);
+  const [data, setData] = useState<Response>({
+    answer: "",
+    detail1: "",
+    detail2: "",
+    detail3: "",
+  });
   const endOfMessages = useRef<HTMLDivElement>(null);
 
   // ボタンでメッセージ送信
@@ -48,23 +63,22 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
         detail2: "せえ",
         detail3: "だまれ！",
       };
-      const data = await response;
+      setData(response);
 
       setChatMessages((prev) => [
         ...prev,
         { type: "user", content: message },
-        { type: "bot", content: data.answer },
-        // 実験用
-        { type: "detail1", content: data.detail1 },
-        { type: "detail2", content: data.detail2 },
-        { type: "detail3", content: data.detail3 },
+        { type: "bot", content: response.answer },
+        // // 実験用
+        // { type: "detail1", content: data.detail1 },
+        // { type: "detail2", content: data.detail2 },
+        // { type: "detail3", content: data.detail3 },
       ]);
-      setChatDetails((prev) => [
-        ...prev,
-        { type: "detail1", content: data.detail1 },
-        { type: "detail2", content: data.detail2 },
-        { type: "detail3", content: data.detail3 },
-      ]);
+      // setChatDetails(() => [
+      //   { type: "detail1", content: data.detail1 },
+      //   { type: "detail2", content: data.detail2 },
+      //   { type: "detail3", content: data.detail3 },
+      // ]);
     } catch (error) {
       console.error("Error:", error);
       alert("エラーが発生しました。");
@@ -91,8 +105,18 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
   }, [chatMessages]);
 
   // ボタンで詳細表示
-  const showDetail = async () => {};
-
+  const handleShowDetails = (message: Message) => {
+    if (message.type === "bot") {
+      // setDescriptions(() => [
+      //   { type: "string", description: "以下の３つの推論をまとめました" },
+      // ]);
+      setChatDetails(() => [
+        { type: "detail1", content: data.detail1 },
+        { type: "detail2", content: data.detail2 },
+        { type: "detail3", content: data.detail3 },
+      ]);
+    }
+  };
   return (
     <Box
       sx={{
@@ -147,7 +171,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
               marginBottom: 2,
             }}
           >
-            以下の3つの推論をまとめました
+            {/* {description} */}
             {chatDetails.map((dtl, index) => (
               <Box
                 key={index}
@@ -210,6 +234,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                 whiteSpace: "pre-wrap",
                 wordWrap: "break-word",
               }}
+              onClick={() => handleShowDetails(msg)}
             >
               <Paper
                 elevation={3}
