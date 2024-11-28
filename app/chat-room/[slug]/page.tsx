@@ -1,22 +1,9 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Paper,
-  CircularProgress,
-} from "@mui/material";
+import { Box, Button, Typography, CircularProgress } from "@mui/material";
 import { TextArea } from "@/app/_component/TextArea";
-import { matchesGlob } from "path";
-import { BoltRounded } from "@mui/icons-material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-// import { Description } from "@mui/icons-material";
-
-// type Message = {
-//   type: "user" | "bot" | "detail1" | "detail2" | "detail3";
-//   content: string;
-// };
+import { BotMessageCard, UserMessageCard } from "@/app/_component/MessageCard";
 
 type Response = {
   messages: {
@@ -46,15 +33,6 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
     first: "",
     second: "",
     third: "",
-  });
-  // const [data, setData] = useState<Response>({
-  //   answer: "",
-  //   detail1: "",
-  //   detail2: "",
-  //   detail3: "",
-  // });
-  const [description, setDescription] = useState<Description>({
-    text: "",
   });
   const endOfMessages = useRef<HTMLDivElement>(null);
 
@@ -232,70 +210,13 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                 </Typography>
               )}
               {chatDetails.first && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    marginBottom: "16px",
-                    whiteSpace: "pre-wrap",
-                    wordWrap: "break-word",
-                  }}
-                >
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      padding: "8px 16px",
-                      borderRadius: "16px",
-                      maxWidth: "70%",
-                    }}
-                  >
-                    {chatDetails.first}
-                  </Paper>
-                </Box>
+                <BotMessageCard response={chatDetails.first} />
               )}
               {chatDetails.second && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    marginBottom: "16px",
-                    whiteSpace: "pre-wrap",
-                    wordWrap: "break-word",
-                  }}
-                >
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      padding: "8px 16px",
-                      borderRadius: "16px",
-                      maxWidth: "70%",
-                    }}
-                  >
-                    {chatDetails.second}
-                  </Paper>
-                </Box>
+                <BotMessageCard response={chatDetails.second} />
               )}
               {chatDetails.first && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    marginBottom: "16px",
-                    whiteSpace: "pre-wrap",
-                    wordWrap: "break-word",
-                  }}
-                >
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      padding: "8px 16px",
-                      borderRadius: "16px",
-                      maxWidth: "70%",
-                    }}
-                  >
-                    {chatDetails.third}
-                  </Paper>
-                </Box>
+                <BotMessageCard response={chatDetails.third} />
               )}
             </>
           </Box>
@@ -331,53 +252,8 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
           {data ? (
             data.messages.map((msg, index) => (
               <>
-                <Box
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginBottom: "16px",
-                    whiteSpace: "pre-wrap",
-                    wordWrap: "break-word",
-                  }}
-                >
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      padding: "8px 16px",
-                      borderRadius: "16px",
-                      backgroundColor: "#373e58",
-                      color: "white",
-                      maxWidth: "70%",
-                    }}
-                    // onMouseEnter={() => handleShowDetails(msg)}
-                  >
-                    {msg.message}
-                  </Paper>
-                </Box>
-                <Box
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    marginBottom: "16px",
-                    whiteSpace: "pre-wrap",
-                    wordWrap: "break-word",
-                  }}
-                >
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      padding: "8px 16px",
-                      borderRadius: "16px",
-                      backgroundColor: "#dadfe8",
-                      color: "black",
-                      maxWidth: "70%",
-                    }}
-                  >
-                    {msg.response}
-                  </Paper>
-                </Box>
+                <UserMessageCard message={msg.message} key={index} />
+                <BotMessageCard response={msg.response} key={index} />
               </>
             ))
           ) : (
