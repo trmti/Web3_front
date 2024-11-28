@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Button, Typography, Paper } from "@mui/material";
 import { TextArea } from "@/app/_component/TextArea";
 import { matchesGlob } from "path";
+import { BoltRounded } from "@mui/icons-material";
 // import { Description } from "@mui/icons-material";
 
 type Message = {
@@ -164,16 +165,32 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
               width: "100%",
               overflowY: "auto",
               backgroundColor: "#fff",
+              fontWeight: "bold",
               border: "1px solid #ccc",
               borderRadius: "8px",
               padding: 2,
               marginBottom: 2,
             }}
           >
-            チャットをクリック、またはカーソルを合わせて詳細確認
-            <br />
-            <br />
-            {description.text}
+            <Typography
+              sx={{
+                borderRadius: "8px",
+                color: "#ffffff",
+                fontWeight: "bold",
+                background: "#373e5a",
+              }}
+            >
+              チャットをクリック、またはカーソルを合わせて詳細確認
+            </Typography>
+            <Typography
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
+              <br />
+              <br />
+              {description.text}
+            </Typography>
             {chatDetails.map((dtl, index) => (
               <Box
                 key={index}
@@ -219,6 +236,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
             width: "100%",
             overflowY: "auto",
             backgroundColor: "#fff",
+            fontWeight: "bold",
             border: "1px solid #ccc",
             borderRadius: "8px",
             padding: 2,
