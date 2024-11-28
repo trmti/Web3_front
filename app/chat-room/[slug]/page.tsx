@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Button, Typography, Paper } from "@mui/material";
 import { TextArea } from "@/app/_component/TextArea";
 import { matchesGlob } from "path";
-import { Description } from "@mui/icons-material";
+// import { Description } from "@mui/icons-material";
 
 type Message = {
   type: "user" | "bot" | "detail1" | "detail2" | "detail3";
@@ -17,6 +17,10 @@ type Response = {
   detail3: string;
 };
 
+type Description = {
+  text: string;
+};
+
 const ChatApp = ({ params }: { params: { slug: string } }) => {
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
@@ -26,6 +30,9 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
     detail1: "",
     detail2: "",
     detail3: "",
+  });
+  const [description, setDescription] = useState<Description>({
+    text: "",
   });
   const endOfMessages = useRef<HTMLDivElement>(null);
 
@@ -58,7 +65,8 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
       //   });
 
       const response = {
-        answer: "うるせえだまれ！",
+        answer:
+          "うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！",
         detail1: "うる",
         detail2: "せえ",
         detail3: "だまれ！",
@@ -69,16 +77,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
         ...prev,
         { type: "user", content: message },
         { type: "bot", content: response.answer },
-        // // 実験用
-        // { type: "detail1", content: data.detail1 },
-        // { type: "detail2", content: data.detail2 },
-        // { type: "detail3", content: data.detail3 },
       ]);
-      // setChatDetails(() => [
-      //   { type: "detail1", content: data.detail1 },
-      //   { type: "detail2", content: data.detail2 },
-      //   { type: "detail3", content: data.detail3 },
-      // ]);
     } catch (error) {
       console.error("Error:", error);
       alert("エラーが発生しました。");
@@ -107,9 +106,9 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
   // ボタンで詳細表示
   const handleShowDetails = (message: Message) => {
     if (message.type === "bot") {
-      // setDescriptions(() => [
-      //   { type: "string", description: "以下の３つの推論をまとめました" },
-      // ]);
+      setDescription({
+        text: "選択した返答は、以下の３つの推論をまとめて作られました。",
+      });
       setChatDetails(() => [
         { type: "detail1", content: data.detail1 },
         { type: "detail2", content: data.detail2 },
@@ -171,7 +170,10 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
               marginBottom: 2,
             }}
           >
-            {/* {description} */}
+            チャットをクリック、またはカーソルを合わせて詳細確認
+            <br />
+            <br />
+            {description.text}
             {chatDetails.map((dtl, index) => (
               <Box
                 key={index}
@@ -234,7 +236,6 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                 whiteSpace: "pre-wrap",
                 wordWrap: "break-word",
               }}
-              onClick={() => handleShowDetails(msg)}
             >
               <Paper
                 elevation={3}
@@ -244,7 +245,11 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                   backgroundColor: msg.type === "user" ? "#373e58" : "#dadfe8",
                   color: msg.type === "user" ? "white" : "black",
                   maxWidth: "70%",
+                  "&:hover": {
+                    background: "#cccccc",
+                  },
                 }}
+                onMouseEnter={() => handleShowDetails(msg)}
               >
                 {msg.content}
               </Paper>
