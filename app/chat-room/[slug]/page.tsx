@@ -1,9 +1,16 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Button, Typography, Paper } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
 import { TextArea } from "@/app/_component/TextArea";
 import { matchesGlob } from "path";
 import { BoltRounded } from "@mui/icons-material";
+import { useQuery } from "@tanstack/react-query";
 // import { Description } from "@mui/icons-material";
 
 type Message = {
@@ -12,10 +19,10 @@ type Message = {
 };
 
 type Response = {
-  answer: string;
-  detail1: string;
-  detail2: string;
-  detail3: string;
+  messages: {
+    message: string;
+    response: string;
+  }[];
 };
 
 type Description = {
@@ -26,16 +33,24 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [chatDetails, setChatDetails] = useState<Message[]>([]);
-  const [data, setData] = useState<Response>({
-    answer: "",
-    detail1: "",
-    detail2: "",
-    detail3: "",
-  });
+  // const [data, setData] = useState<Response>({
+  //   answer: "",
+  //   detail1: "",
+  //   detail2: "",
+  //   detail3: "",
+  // });
   const [description, setDescription] = useState<Description>({
     text: "",
   });
   const endOfMessages = useRef<HTMLDivElement>(null);
+
+  const { isPending, error, data } = useQuery<Response>({
+    queryKey: ["messages"],
+    queryFn: () =>
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_ROOT}/model/${params.slug}/message?user_id=${localStorage.getItem("user_id")}`
+      ).then((res) => res.json()),
+  });
 
   // ボタンでメッセージ送信
   const handleSend = async () => {
@@ -52,33 +67,31 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
     const select3Value = params.get("select3");
 
     try {
-      //   const response = await fetch("http://192.168.11.10:8000/create_task", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       Question: message,
-      //       Model_Names: [select1Value, select2Value, select3Value],
-      //       Aggregator_Name: "Llama-2-7b-Japanese",
-      //       Wait_Task_Num: 1,
-      //     }),
-      //   });
-
-      const response = {
-        answer:
-          "うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！",
-        detail1: "うる",
-        detail2: "せえ",
-        detail3: "だまれ！",
-      };
-      setData(response);
-
-      setChatMessages((prev) => [
-        ...prev,
-        { type: "user", content: message },
-        { type: "bot", content: response.answer },
-      ]);
+      // const response = await fetch("http://192.168.11.10:8000/create_task", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     Question: message,
+      //     Model_Names: [select1Value, select2Value, select3Value],
+      //     Aggregator_Name: "Llama-2-7b-Japanese",
+      //     Wait_Task_Num: 1,
+      //   }),
+      // });
+      // const response = {
+      //   answer:
+      //     "うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！",
+      //   detail1: "うる",
+      //   detail2: "せえ",
+      //   detail3: "だまれ！",
+      // };
+      // setData(response);
+      // setChatMessages((prev) => [
+      //   ...prev,
+      //   { type: "user", content: message },
+      //   { type: "bot", content: response.answer },
+      // ]);
     } catch (error) {
       console.error("Error:", error);
       alert("エラーが発生しました。");
@@ -105,18 +118,18 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
   }, [chatMessages]);
 
   // ボタンで詳細表示
-  const handleShowDetails = (message: Message) => {
-    if (message.type === "bot") {
-      setDescription({
-        text: "選択した返答は、以下の３つの推論をまとめて作られました。",
-      });
-      setChatDetails(() => [
-        { type: "detail1", content: data.detail1 },
-        { type: "detail2", content: data.detail2 },
-        { type: "detail3", content: data.detail3 },
-      ]);
-    }
-  };
+  // const handleShowDetails = (message: Message) => {
+  //   if (message.type === "bot") {
+  //     setDescription({
+  //       text: "選択した返答は、以下の３つの推論をまとめて作られました。",
+  //     });
+  //     setChatDetails(() => [
+  //       { type: "detail1", content: data.detail1 },
+  //       { type: "detail2", content: data.detail2 },
+  //       { type: "detail3", content: data.detail3 },
+  //     ]);
+  //   }
+  // };
   return (
     <Box
       sx={{
@@ -244,35 +257,75 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
           }}
           ref={endOfMessages}
         >
-          {chatMessages.map((msg, index) => (
+          {data ? (
+            data.messages.map((msg, index) => (
+              <>
+                <Box
+                  key={index}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginBottom: 1,
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                  }}
+                >
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: "8px 16px",
+                      borderRadius: "16px",
+                      backgroundColor: "#373e58",
+                      color: "white",
+                      maxWidth: "70%",
+                    }}
+                    // onMouseEnter={() => handleShowDetails(msg)}
+                  >
+                    {msg.message}
+                  </Paper>
+                </Box>
+                <Box
+                  key={index}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    marginBottom: 1,
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                  }}
+                >
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: "8px 16px",
+                      borderRadius: "16px",
+                      backgroundColor: "#dadfe8",
+                      color: "black",
+                      maxWidth: "70%",
+                      "&:hover": {
+                        background: "#cccccc",
+                        cursor: "pointer",
+                      },
+                    }}
+                    // onMouseEnter={() => handleShowDetails(msg)}
+                  >
+                    {msg.response}
+                  </Paper>
+                </Box>
+              </>
+            ))
+          ) : (
             <Box
-              key={index}
               sx={{
                 display: "flex",
-                justifyContent: msg.type === "user" ? "flex-end" : "flex-start",
-                marginBottom: 1,
-                whiteSpace: "pre-wrap",
-                wordWrap: "break-word",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
               }}
             >
-              <Paper
-                elevation={3}
-                sx={{
-                  padding: "8px 16px",
-                  borderRadius: "16px",
-                  backgroundColor: msg.type === "user" ? "#373e58" : "#dadfe8",
-                  color: msg.type === "user" ? "white" : "black",
-                  maxWidth: "70%",
-                  "&:hover": {
-                    background: "#cccccc",
-                  },
-                }}
-                onMouseEnter={() => handleShowDetails(msg)}
-              >
-                {msg.content}
-              </Paper>
+              <CircularProgress />
             </Box>
-          ))}
+          )}
         </Box>
 
         {/* メッセージ入力エリア */}
