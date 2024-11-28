@@ -10,13 +10,13 @@ import {
 import { TextArea } from "@/app/_component/TextArea";
 import { matchesGlob } from "path";
 import { BoltRounded } from "@mui/icons-material";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // import { Description } from "@mui/icons-material";
 
-type Message = {
-  type: "user" | "bot" | "detail1" | "detail2" | "detail3";
-  content: string;
-};
+// type Message = {
+//   type: "user" | "bot" | "detail1" | "detail2" | "detail3";
+//   content: string;
+// };
 
 type Response = {
   messages: {
@@ -25,14 +25,28 @@ type Response = {
   }[];
 };
 
+type SendMessageBody = {
+  message: string;
+  response: string;
+};
+
+type SendMessageResponse = {
+  first: string;
+  second: string;
+  third: string;
+};
+
 type Description = {
   text: string;
 };
 
 const ChatApp = ({ params }: { params: { slug: string } }) => {
   const [message, setMessage] = useState("");
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
-  const [chatDetails, setChatDetails] = useState<Message[]>([]);
+  const [chatDetails, setChatDetails] = useState<SendMessageResponse>({
+    first: "",
+    second: "",
+    third: "",
+  });
   // const [data, setData] = useState<Response>({
   //   answer: "",
   //   detail1: "",
@@ -44,13 +58,42 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
   });
   const endOfMessages = useRef<HTMLDivElement>(null);
 
+  // モデルごとのチャットを取得
   const { isPending, error, data } = useQuery<Response>({
-    queryKey: ["messages"],
+    queryKey: ["messages", params.slug],
     queryFn: () =>
       fetch(
         `${process.env.NEXT_PUBLIC_API_ROOT}/model/${params.slug}/message?user_id=${localStorage.getItem("user_id")}`
       ).then((res) => res.json()),
   });
+
+  // モデルごとのチャットを送信
+  const mutation = useMutation<SendMessageResponse, unknown, SendMessageBody>({
+    mutationFn: ({
+      message,
+      response,
+    }: {
+      message: string;
+      response: string;
+    }) => {
+      return fetch(
+        `${process.env.NEXT_PUBLIC_API_ROOT}/model/${params.slug}/message?user_id=${localStorage.getItem("user_id")}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: message,
+            response: response,
+          }),
+        }
+      ).then((response) => response.json());
+    },
+  });
+
+  // チャットのキャッシュ更新
+  const queryClient = useQueryClient();
 
   // ボタンでメッセージ送信
   const handleSend = async () => {
@@ -59,45 +102,22 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
       return;
     }
 
-    const queryString = window.location.search;
-    const params = new URLSearchParams(queryString);
+    // モデルごとのチャットを送信
+    mutation.mutate(
+      { message: message, response: "ペ二バン最高!" },
+      {
+        onSuccess: (res) => {
+          setChatDetails(res);
+          // チャットのキャッシュ更新
+          queryClient.invalidateQueries({
+            queryKey: ["messages", params.slug],
+          });
+        },
+      }
+    );
 
-    const select1Value = params.get("select1");
-    const select2Value = params.get("select2");
-    const select3Value = params.get("select3");
-
-    try {
-      // const response = await fetch("http://192.168.11.10:8000/create_task", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     Question: message,
-      //     Model_Names: [select1Value, select2Value, select3Value],
-      //     Aggregator_Name: "Llama-2-7b-Japanese",
-      //     Wait_Task_Num: 1,
-      //   }),
-      // });
-      // const response = {
-      //   answer:
-      //     "うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！うるせえだまれ！",
-      //   detail1: "うる",
-      //   detail2: "せえ",
-      //   detail3: "だまれ！",
-      // };
-      // setData(response);
-      // setChatMessages((prev) => [
-      //   ...prev,
-      //   { type: "user", content: message },
-      //   { type: "bot", content: response.answer },
-      // ]);
-    } catch (error) {
-      console.error("Error:", error);
-      alert("エラーが発生しました。");
-    }
-
-    setMessage(""); // メッセージボックスをクリア
+    // メッセージ入力エリアをクリア
+    setMessage("");
   };
 
   // Enterキーでメッセージ送信
@@ -115,30 +135,15 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
     if (endOfMessages.current) {
       endOfMessages.current.scrollTop = endOfMessages.current.scrollHeight;
     }
-  }, [chatMessages]);
+  }, [data]);
 
-  // ボタンで詳細表示
-  // const handleShowDetails = (message: Message) => {
-  //   if (message.type === "bot") {
-  //     setDescription({
-  //       text: "選択した返答は、以下の３つの推論をまとめて作られました。",
-  //     });
-  //     setChatDetails(() => [
-  //       { type: "detail1", content: data.detail1 },
-  //       { type: "detail2", content: data.detail2 },
-  //       { type: "detail3", content: data.detail3 },
-  //     ]);
-  //   }
-  // };
   return (
     <Box
       sx={{
-        width: "80%",
         height: "100%",
         margin: "0 auto",
         padding: 2,
         backgroundColor: "#dadfe8",
-        borderRadius: "8px",
         display: "flex",
         justifyContent: "space-between",
       }}
@@ -191,9 +196,10 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                 color: "#ffffff",
                 fontWeight: "bold",
                 background: "#373e5a",
+                padding: "4px",
               }}
             >
-              チャットをクリック、またはカーソルを合わせて詳細確認
+              最新の応答の詳細は以下になります
             </Typography>
             <Typography
               sx={{
@@ -201,32 +207,97 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
               }}
             >
               <br />
-              <br />
-              {description.text}
             </Typography>
-            {chatDetails.map((dtl, index) => (
-              <Box
-                key={index}
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  marginBottom: 1,
-                  whiteSpace: "pre-wrap",
-                  wordWrap: "break-word",
-                }}
-              >
-                <Paper
-                  elevation={3}
+            <>
+              {!chatDetails.first &&
+              !chatDetails.second &&
+              !chatDetails.third ? (
+                <Typography
                   sx={{
-                    padding: "8px 16px",
-                    borderRadius: "16px",
-                    maxWidth: "70%",
+                    fontWeight: "bold",
+                    textAlign: "center",
                   }}
                 >
-                  {dtl.content}
-                </Paper>
-              </Box>
-            ))}
+                  {params.slug}に聞いてみましょう!
+                </Typography>
+              ) : (
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginBottom: "16px",
+                  }}
+                >
+                  以下の３つの推論をまとめて作られました。
+                </Typography>
+              )}
+              {chatDetails.first && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    marginBottom: "16px",
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                  }}
+                >
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: "8px 16px",
+                      borderRadius: "16px",
+                      maxWidth: "70%",
+                    }}
+                  >
+                    {chatDetails.first}
+                  </Paper>
+                </Box>
+              )}
+              {chatDetails.second && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    marginBottom: "16px",
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                  }}
+                >
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: "8px 16px",
+                      borderRadius: "16px",
+                      maxWidth: "70%",
+                    }}
+                  >
+                    {chatDetails.second}
+                  </Paper>
+                </Box>
+              )}
+              {chatDetails.first && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    marginBottom: "16px",
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                  }}
+                >
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: "8px 16px",
+                      borderRadius: "16px",
+                      maxWidth: "70%",
+                    }}
+                  >
+                    {chatDetails.third}
+                  </Paper>
+                </Box>
+              )}
+            </>
           </Box>
         </Box>
       </Box>
@@ -265,7 +336,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                   sx={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    marginBottom: 1,
+                    marginBottom: "16px",
                     whiteSpace: "pre-wrap",
                     wordWrap: "break-word",
                   }}
@@ -289,7 +360,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                   sx={{
                     display: "flex",
                     justifyContent: "flex-start",
-                    marginBottom: 1,
+                    marginBottom: "16px",
                     whiteSpace: "pre-wrap",
                     wordWrap: "break-word",
                   }}
@@ -302,12 +373,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
                       backgroundColor: "#dadfe8",
                       color: "black",
                       maxWidth: "70%",
-                      "&:hover": {
-                        background: "#cccccc",
-                        cursor: "pointer",
-                      },
                     }}
-                    // onMouseEnter={() => handleShowDetails(msg)}
                   >
                     {msg.response}
                   </Paper>
