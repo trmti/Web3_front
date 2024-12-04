@@ -53,7 +53,7 @@ const ModelSelector = ({
       {options.map((option) => (
         <MenuItem key={option.value} value={option.value}>
           <Tooltip title={option.label} arrow>
-            <Typography noWrap>{option.label}</Typography>
+            <Typography noWrap>{option.value}</Typography>
           </Tooltip>
         </MenuItem>
       ))}
@@ -98,14 +98,40 @@ const Home = () => {
   };
 
   const models = [
-    { value: "Llama-2-7b-Japanese", label: "Llama-2-7b-Japanese" },
+    {
+      value: "Llama-2-7b-Japanese",
+      label:
+        "MetaのLlama-2を日本語特化で微調整したモデル。高品質な日本語生成が可能で、対話や要約に適応。",
+    },
     {
       value: "haqishen-Llama-3-8B-Japanese",
-      label: "haqishen-Llama-3-8B-Japanese",
+      label:
+        "Haqishen提供の日本語特化モデル。高度な日本語処理と生成能力を持つ8Bパラメータ搭載。",
     },
     {
       value: "umiyuki-Japanese-Chat-Umievo",
-      label: "umiyuki-Japanese-Chat-Umievo",
+      label:
+        "umiyukiの日本語チャット特化型モデル。強力な４つの日本語モデルを掛け合わせている。自然な会話と柔軟な応答が可能。",
+    },
+    {
+      value: "lightblue-suzume-llama-3-8B-japanese",
+      label:
+        "MetaのLlama-3をLightblueが改良した日本語対応モデル。高精度な文脈理解と生成能力を持つ。",
+    },
+    {
+      value: "Llama-3.2-1B-Instruct",
+      label:
+        "MetaのLlama-3.2の命令調整済多言語モデル。教師あり微調整 と人間によるフィードバックによる強化学習を使用し、有用性と安全性に関して人間の好みに合わせている。軽量でリソースに優しく、多様なタスクに対応可能。",
+    },
+    {
+      value: "Qwen2-0.5B-Instruct",
+      label:
+        "Alibaba提供のQwen2の軽量モデル。リソース制限環境での対話生成やタスク処理に最適。",
+    },
+    {
+      value: "gemma-2-baku-2b-it",
+      label:
+        "Google提供のGemma2の日本語対応モデル。テキスト生成能力やコストパフォーマンスを活かしつつ軽量化。",
     },
   ];
 
