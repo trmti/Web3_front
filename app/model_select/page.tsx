@@ -1,54 +1,25 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, ReactNode } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import {
   Container,
   TextField,
   Select,
   MenuItem,
-  Button,
   Box,
+  Tooltip,
   Typography,
   SelectChangeEvent,
-  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { PrimaryButton } from "../_component/PrimaryButton";
 import { useRouter } from "next/navigation";
-import { useDropzone, FileRejection } from "react-dropzone";
-
-// スタイル定義
-const DropAreaContainer = styled(Box)({
-  display: "flex",
-  alignItems: "center", // 左右に並べるためにアイテムを中央に配置
-  justifyContent: "space-between", // 余白を使って左右に配置
-  marginBottom: "80px", // 下の余白
-});
-
-const DropArea = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "50%", // 幅を調整して左側に寄せる
-  height: "85px",
-  textAlign: "center",
-  border: "1px dotted #373e5a",
-  color: "#808080",
-});
-
-const FileList = styled("div")({
-  width: "50%", // 幅を調整して右側に表示
-  textAlign: "center",
-  marginTop: "20px",
-  marginLeft: "30px",
-});
 
 // ModelSelectorコンポーネントのスタイル
 const ModelSelect = styled(Select)({
-  "text-overflow": "ellipsis",
+  textOverflow: "ellipsis",
   overflow: "hidden",
-  "white-space": "nowrap",
+  whiteSpace: "nowrap",
   maxWidth: "175px", // プルダウンメニューの横幅を設定（必要に応じて調整）
 });
 
@@ -81,7 +52,9 @@ const ModelSelector = ({
       </MenuItem>
       {options.map((option) => (
         <MenuItem key={option.value} value={option.value}>
-          {option.label}
+          <Tooltip title={option.label} arrow>
+            <Typography noWrap>{option.label}</Typography>
+          </Tooltip>
         </MenuItem>
       ))}
     </ModelSelect>
@@ -95,12 +68,17 @@ const Home = () => {
   const [model2, setModel2] = useState("");
   const [model3, setModel3] = useState("");
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
   const router = useRouter();
-  const Uid = localStorage.getItem("user_id");
+
+  useEffect(() => {
+    const storedUid = localStorage.getItem("user_id");
+    setUid(storedUid);
+  }, []);
 
   const onClickCreate = async () => {
     const Data = {
-      user_id: Uid,
+      user_id: uid,
       model_name_1: model1,
       model_name_2: model2,
       model_name_3: model3,
@@ -168,7 +146,6 @@ const Home = () => {
           color="primary"
           disabled={!isButtonEnabled}
           onClick={onClickCreate}
-          // onClick={() => router.push("/home")}
         >
           決定
         </PrimaryButton>
