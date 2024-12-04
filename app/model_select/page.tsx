@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, ReactNode } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  ReactNode,
+  forwardRef,
+} from "react";
 import {
   Container,
   TextField,
@@ -11,6 +17,8 @@ import {
   Typography,
   SelectChangeEvent,
   IconButton,
+  Tooltip,
+  buttonGroupClasses,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { PrimaryButton } from "../_component/PrimaryButton";
@@ -46,47 +54,58 @@ const FileList = styled("div")({
 
 // ModelSelectorコンポーネントのスタイル
 const ModelSelect = styled(Select)({
-  "text-overflow": "ellipsis",
+  textOverflow: "ellipsis",
   overflow: "hidden",
-  "white-space": "nowrap",
+  whiteSpace: "nowrap",
+  // pointerEvents: "auto",
   maxWidth: "175px", // プルダウンメニューの横幅を設定（必要に応じて調整）
 });
 
 // Components
-const ModelSelector = ({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: string;
-  onChange: (event: SelectChangeEvent<string>, child: ReactNode) => void;
-  options: { value: string; label: string }[];
-}) => (
-  <Box>
-    <Typography variant="h6" sx={{ color: "#373e5a", textAlign: "center" }}>
-      {label}
-    </Typography>
-    <ModelSelect
-      fullWidth
-      value={value}
-      onChange={(event, child) =>
-        onChange(event as SelectChangeEvent<string>, child)
-      }
-      displayEmpty
+const ModelSelector = forwardRef(function ModelSelector(
+  {
+    label,
+    value,
+    onChange,
+    options,
+  }: {
+    label: string;
+    value: string;
+    onChange: (event: SelectChangeEvent<string>, child: ReactNode) => void;
+    options: { value: string; label: string }[];
+  },
+  ref: React.Ref<HTMLDivElement>
+) {
+  return (
+    <Box
+      ref={ref}
+      sx={{
+        pointerEvents: "auto", // 追加
+      }}
     >
-      <MenuItem value="">
-        <Typography sx={{ color: "#162040" }}>選択してください</Typography>
-      </MenuItem>
-      {options.map((option) => (
-        <MenuItem key={option.value} value={option.value}>
-          {option.label}
+      <Typography variant="h6" sx={{ color: "#373e5a", textAlign: "center" }}>
+        {label}
+      </Typography>
+      <ModelSelect
+        fullWidth
+        value={value}
+        onChange={(event, child) =>
+          onChange(event as SelectChangeEvent<string>, child)
+        }
+        displayEmpty
+      >
+        <MenuItem value="">
+          <Typography sx={{ color: "#162040" }}>選択してください</Typography>
         </MenuItem>
-      ))}
-    </ModelSelect>
-  </Box>
-);
+        {options.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </ModelSelect>
+    </Box>
+  );
+});
 
 // Homeコンポーネント
 const Home = () => {
@@ -151,15 +170,20 @@ const Home = () => {
 
       <Box display="flex" justifyContent="space-around" my={"50px"}>
         {["モデル1", "モデル2", "モデル3"].map((label, index) => (
-          <ModelSelector
-            key={index}
-            label={label}
-            value={[model1, model2, model3][index]}
-            onChange={(e) =>
-              [setModel1, setModel2, setModel3][index](e.target.value as string)
-            }
-            options={models}
-          />
+          <Box key={index}>
+            <Tooltip title="AI" arrow>
+              <ModelSelector
+                label={label}
+                value={[model1, model2, model3][index]}
+                onChange={(e) =>
+                  [setModel1, setModel2, setModel3][index](
+                    e.target.value as string
+                  )
+                }
+                options={models}
+              />
+            </Tooltip>
+          </Box>
         ))}
       </Box>
       <Box textAlign="center" my={"50px"}>
