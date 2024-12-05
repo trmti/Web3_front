@@ -1,6 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Button, Typography, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  CircularProgress,
+  Skeleton,
+} from "@mui/material";
 import { TextArea } from "@/app/_component/TextArea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BotMessageCard, UserMessageCard } from "@/app/_component/MessageCard";
@@ -10,17 +16,19 @@ type Response = {
     message: string;
     response: string;
   }[];
+  model: {
+    name: string;
+  };
 };
 
 type SendMessageBody = {
   message: string;
-  response: string;
 };
 
 type SendMessageResponse = {
-  first: string;
-  second: string;
-  third: string;
+  response_1: string;
+  response_2: string;
+  response_final: string;
 };
 
 type Description = {
@@ -30,11 +38,12 @@ type Description = {
 const ChatApp = ({ params }: { params: { slug: string } }) => {
   const [message, setMessage] = useState("");
   const [chatDetails, setChatDetails] = useState<SendMessageResponse>({
-    first: "",
-    second: "",
-    third: "",
+    response_1: "",
+    response_2: "",
+    response_final: "",
   });
   const endOfMessages = useRef<HTMLDivElement>(null);
+  const [sendingMessage, setSendingMessage] = useState("");
 
   // モデルごとのチャットを取得
   const { isPending, error, data } = useQuery<Response>({
@@ -46,27 +55,22 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
   });
 
   // モデルごとのチャットを送信
-  const mutation = useMutation<SendMessageResponse, unknown, SendMessageBody>({
-    mutationFn: ({
-      message,
-      response,
-    }: {
-      message: string;
-      response: string;
-    }) => {
-      return fetch(
-        `${process.env.NEXT_PUBLIC_API_ROOT}/model/${params.slug}/message?user_id=${localStorage.getItem("user_id")}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: message,
-            response: response,
-          }),
-        }
-      ).then((response) => response.json());
+  const { mutate, isPending: isPendingSendMessage } = useMutation<
+    SendMessageResponse,
+    unknown,
+    SendMessageBody
+  >({
+    mutationFn: async ({ message }: { message: string }) => {
+      return await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Question: message,
+          ModelID: params.slug,
+        }),
+      }).then((response) => response.json());
     },
   });
 
@@ -80,16 +84,22 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
       return;
     }
 
+    setSendingMessage(message);
     // モデルごとのチャットを送信
-    mutation.mutate(
-      { message: message, response: "ペ二バン最高!" },
+    mutate(
+      { message: message },
       {
         onSuccess: (res) => {
+          console.log(res);
           setChatDetails(res);
+          setSendingMessage("");
           // チャットのキャッシュ更新
           queryClient.invalidateQueries({
             queryKey: ["messages", params.slug],
           });
+        },
+        onError: () => {
+          setSendingMessage("");
         },
       }
     );
@@ -113,7 +123,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
     if (endOfMessages.current) {
       endOfMessages.current.scrollTop = endOfMessages.current.scrollHeight;
     }
-  }, [data]);
+  }, [data, sendingMessage, isPendingSendMessage]);
 
   return (
     <Box
@@ -149,9 +159,16 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
               flexGrow: 1,
             }}
           >
-            <Typography variant="h6" color="white">
-              {params.slug}
-            </Typography>
+            {data ? (
+              <Typography variant="h6" color="white">
+                {data.model.name}
+              </Typography>
+            ) : (
+              <Skeleton
+                width={"100%"}
+                sx={{ fontSize: "22px", backgroundColor: "#dadfe8" }}
+              />
+            )}
           </Box>
           {/* 詳細表示エリア */}
           <Box
@@ -179,44 +196,41 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
             >
               最新の応答の詳細は以下になります
             </Typography>
-            <Typography
-              sx={{
-                fontWeight: "bold",
-              }}
-            >
-              <br />
-            </Typography>
             <>
-              {!chatDetails.first &&
-              !chatDetails.second &&
-              !chatDetails.third ? (
+              {!chatDetails.response_1 &&
+              !chatDetails.response_2 &&
+              !chatDetails.response_final ? (
                 <Typography
                   sx={{
                     fontWeight: "bold",
                     textAlign: "center",
+                    color: "black",
+                    marginTop: "16px",
                   }}
                 >
-                  {params.slug}に聞いてみましょう!
+                  {data?.model.name}に聞いてみましょう!
                 </Typography>
               ) : (
                 <Typography
                   sx={{
                     fontWeight: "bold",
                     textAlign: "center",
+                    marginTop: "16px",
                     marginBottom: "16px",
+                    color: "black",
                   }}
                 >
                   以下の３つの推論をまとめて作られました。
                 </Typography>
               )}
-              {chatDetails.first && (
-                <BotMessageCard response={chatDetails.first} />
+              {chatDetails.response_1 && (
+                <BotMessageCard>{chatDetails.response_1}</BotMessageCard>
               )}
-              {chatDetails.second && (
-                <BotMessageCard response={chatDetails.second} />
+              {chatDetails.response_2 && (
+                <BotMessageCard>{chatDetails.response_2}</BotMessageCard>
               )}
-              {chatDetails.first && (
-                <BotMessageCard response={chatDetails.third} />
+              {chatDetails.response_final && (
+                <BotMessageCard>{chatDetails.response_final}</BotMessageCard>
               )}
             </>
           </Box>
@@ -250,10 +264,12 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
           ref={endOfMessages}
         >
           {data ? (
-            data.messages.map((msg, index) => (
+            data.messages.map((msg) => (
               <>
-                <UserMessageCard message={msg.message} key={index} />
-                <BotMessageCard response={msg.response} key={index} />
+                <UserMessageCard message={msg.message} key={msg.message} />
+                <BotMessageCard key={msg.response}>
+                  {msg.response}
+                </BotMessageCard>
               </>
             ))
           ) : (
@@ -267,6 +283,16 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
             >
               <CircularProgress />
             </Box>
+          )}
+          {sendingMessage && <UserMessageCard message={sendingMessage} />}
+          {isPendingSendMessage && (
+            <BotMessageCard paperProps={{ sx: { width: "70%" } }}>
+              <>
+                <Skeleton width={"100%"} sx={{ backgroundColor: "#ff6680" }} />
+                <Skeleton width={"100%"} sx={{ backgroundColor: "#ff6680" }} />
+                <Skeleton width={"70%"} sx={{ backgroundColor: "#ff6680" }} />
+              </>
+            </BotMessageCard>
           )}
         </Box>
 
@@ -285,6 +311,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
             placeholder="メッセージを入力"
             minRows={2}
             maxRows={3}
+            sx={{ color: "#000" }}
           />
           <Button
             variant="contained"
