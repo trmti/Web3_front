@@ -1,4 +1,4 @@
-import { Box, BoxProps, Paper } from "@mui/material";
+import { Box, BoxProps, Paper, PaperProps } from "@mui/material";
 
 // ユーザのメッセージカード
 export const UserMessageCard = ({
@@ -36,10 +36,11 @@ export const UserMessageCard = ({
 
 // モデルのメッセージカード
 export const BotMessageCard = ({
-  response,
+  children,
   sx,
+  paperProps,
   ...rest
-}: { response: string } & BoxProps) => {
+}: BoxProps & { paperProps?: PaperProps }) => {
   return (
     <Box
       sx={{
@@ -60,9 +61,10 @@ export const BotMessageCard = ({
           backgroundColor: "#dadfe8",
           color: "black",
           maxWidth: "70%",
+          ...paperProps?.sx,
         }}
       >
-        {response}
+        {children}
       </Paper>
     </Box>
   );
