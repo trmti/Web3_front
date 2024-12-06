@@ -57,6 +57,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
           },
         }
       ).then((res) => res.json()),
+    gcTime: 1000 * 60 * 30, // 30分
   });
 
   // モデルごとのチャットを送信
