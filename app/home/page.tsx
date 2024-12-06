@@ -6,6 +6,7 @@ import {
   CardContent,
   Container,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { useRouter } from "next/navigation";
@@ -38,7 +39,11 @@ export default function Home() {
       ).then((res) => res.json()),
   });
 
-  return data && data.models.length !== 0 ? (
+  return isPending ? (
+    <Container maxWidth="md" sx={{ display: "flex", justifyContent: "center" }}>
+      <CircularProgress size={48} sx={{ marginTop: "32px" }} />
+    </Container>
+  ) : data && data.models.length !== 0 ? (
     <Container
       maxWidth="md"
       sx={{
