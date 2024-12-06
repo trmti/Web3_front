@@ -18,7 +18,14 @@ export default function RootLayout({
 }) {
   return (
     <TanstackProvider>
-      <html lang="jp" style={{ height: "100%" }}>
+      <html
+        lang="jp"
+        style={{ height: "100%" }}
+        title="Decentra Love | MOAによる分散AIプラットフォーム"
+      >
+        <head>
+          <title>Decentra Love | MOAによる分散AIプラットフォーム</title>
+        </head>
         <body className={inter.className} style={{ height: "100%" }}>
           <Header />
           {children}
