@@ -27,7 +27,9 @@ export function Header() {
     setAnchorElUser(event.currentTarget);
   };
   const isAuthorized = React.useMemo(() => {
-    return localStorage.getItem("user_id");
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("user_id");
+    }
   }, [pathname]);
 
   const handleCloseUserMenu = () => {

@@ -21,7 +21,7 @@ const goodIndex = 1;
 const badIndex = 2;
 const speedIndex = 3;
 
-export const fetchBlockchain = async () => {
+const fetchBlockchain = async () => {
   const provider = new ethers.JsonRpcProvider(
     "https://rpc-amoy.polygon.technology"
   );
@@ -52,7 +52,7 @@ export const fetchBlockchain = async () => {
   });
 };
 
-const GPU = async () => {
+export default async function GPU() {
   const blockchains = await fetchBlockchain();
   return (
     <Container
@@ -106,6 +106,4 @@ const GPU = async () => {
       </Box>
     </Container>
   );
-};
-
-export default GPU;
+}
