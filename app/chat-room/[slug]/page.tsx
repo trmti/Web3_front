@@ -115,11 +115,11 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
 
   // Enterキーでメッセージ送信
   const keySend = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.shiftKey && event.key === "Enter") {
-      return;
-    } else if (event.key === "Enter") {
+    if (event.ctrlKey && event.key === "Enter") {
       event.preventDefault();
       handleSend();
+    } else if (event.key === "Enter") {
+      return;
     }
   };
 
