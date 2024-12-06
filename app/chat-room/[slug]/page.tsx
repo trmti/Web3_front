@@ -78,6 +78,7 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
         }),
       }).then((response) => response.json());
     },
+    retry: false,
   });
 
   // チャットのキャッシュ更新
