@@ -50,7 +50,12 @@ const ChatApp = ({ params }: { params: { slug: string } }) => {
     queryKey: ["messages", params.slug],
     queryFn: () =>
       fetch(
-        `${process.env.NEXT_PUBLIC_API_ROOT}/model/${params.slug}/message?user_id=${localStorage.getItem("user_id")}`
+        `${process.env.NEXT_PUBLIC_API_ROOT}/model/${params.slug}/message?user_id=${localStorage.getItem("user_id")}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       ).then((res) => res.json()),
   });
 

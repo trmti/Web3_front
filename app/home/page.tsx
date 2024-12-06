@@ -12,53 +12,27 @@ import { useRouter } from "next/navigation";
 import EditIcon from "@mui/icons-material/Edit";
 import { useQuery } from "@tanstack/react-query";
 
-const mockChatRooms = [
-  {
-    id: 1,
-    name: "デフォルト",
-    selectedModel1: "hogehoge",
-    selectedModel2: "unko",
-    selectedModel3: "tinko",
-  },
-  {
-    id: 2,
-    name: "お嬢様モデル",
-    selectedModel1: "hogehoge",
-    selectedModel2: "unko",
-    selectedModel3: "tinko",
-  },
-  {
-    id: 3,
-    name: "農業モデル",
-    selectedModel1: "hogehoge",
-    selectedModel2: "unko",
-    selectedModel3: "tinko",
-  },
-  {
-    id: 4,
-    name: "医療モデル",
-    selectedModel1: "hogehoge",
-    selectedModel2: "unko",
-    selectedModel3: "tinko",
-  },
-];
-
 type ModelResponse = {
   models: {
     id: number;
+    name: string;
     train_completed: boolean;
     base_models: { id: number; name: string }[];
   }[];
 };
 
 export default function Home() {
-  const cards = Array(4).fill({ id: 1 });
   const router = useRouter();
   const { isPending, error, data } = useQuery<ModelResponse>({
     queryKey: ["models"],
     queryFn: () =>
       fetch(
-        `${process.env.NEXT_PUBLIC_API_ROOT}/model?user_id=${localStorage.getItem("user_id")}`
+        `${process.env.NEXT_PUBLIC_API_ROOT}/model?user_id=${localStorage.getItem("user_id")}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       ).then((res) => res.json()),
   });
 
@@ -66,8 +40,8 @@ export default function Home() {
     <Container
       maxWidth="md"
       sx={{
-        display: "flex",
-        flexWrap: "wrap",
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
         justifyContent: "space-around",
         gap: 2,
         marginTop: 5,
@@ -90,11 +64,14 @@ export default function Home() {
                 variant="h5"
                 component="div"
               >
-                {value.id}
+                {value.name}
               </Typography>
 
               {value.base_models.map((value, index) => (
-                <Typography sx={{ color: "text.secondary", mb: 1.0 }}>
+                <Typography
+                  key={value.id}
+                  sx={{ color: "text.secondary", mb: 1.0 }}
+                >
                   {value.name}
                 </Typography>
               ))}

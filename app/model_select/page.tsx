@@ -79,6 +79,7 @@ const Home = () => {
   const onClickCreate = async () => {
     const Data = {
       user_id: uid,
+      model_name: name,
       model_name_1: model1,
       model_name_2: model2,
       model_name_3: model3,
